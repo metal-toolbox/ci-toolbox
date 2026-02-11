@@ -1,0 +1,39 @@
+name: build go
+
+description: 'checkout, build go binaries, and upload as artifact'
+
+inputs:
+  output:
+    description: 'path to the output binary'
+    required: true
+  artifact-name:
+    description: 'name of the artifact to upload'
+    required: false
+    default: 'go-build'
+  build-cmd:
+    description: 'override go build command to run'
+    required: false
+  version-file: 
+    description: Path to the go.mod, go.work, .go-version, or .tool-versions file.
+    required: false
+    default: 'go.mod'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
+      with:
+        go-version-file: ${{ inputs.version-file }}
+    - name: build
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.build-cmd }}" ]; then
+          go build -buildvcs=false -mod=mod -a -o ${{ inputs.output }}
+        else
+          eval "${{ inputs.build-cmd }}"
+        fi
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.output }}
