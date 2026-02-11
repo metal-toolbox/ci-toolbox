@@ -8,10 +8,20 @@ on:
         type: string
         required: false
         default: ubuntu-latest
-      image:
+      scan-type:
         type: string
-        required: true
-        description: the image to scan
+        required: false
+        default: fs
+        description: 'The type of scan: fs (filesystem), image, repo, etc.'
+      image-ref:
+        type: string
+        required: false
+        description: 'The image to scan (required if scan-type is image)'
+      scan-ref:
+        type: string
+        required: false
+        default: '.'
+        description: 'The path or reference to scan (default: . for filesystem)'
 
 jobs:
   trivy-scan:
@@ -26,14 +36,18 @@ jobs:
         env:
           TRIVY_DEBUG: true
         with:
-          image-ref: ${{ inputs.image }}
+          scan-type: ${{ inputs.scan-type }}
+          image-ref: ${{ inputs.image-ref }}
+          scan-ref: ${{ inputs.scan-ref }}
           format: 'sarif'
           output: 'trivy-results.sarif'
           exit-code: '0'
       - name: fail with high critical
         uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # 0.33.1
         with:
-          image-ref: ${{ inputs.image }}
+          scan-type: ${{ inputs.scan-type }}
+          image-ref: ${{ inputs.image-ref }}
+          scan-ref: ${{ inputs.scan-ref }}
           format: 'table'
           severity: 'HIGH,CRITICAL'
           output: 'trivy-results.txt'
