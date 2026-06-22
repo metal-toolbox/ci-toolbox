@@ -31,35 +31,35 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # - name: full scan with Trivy
-      #   uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # 0.33.1
-      #   env:
-      #     TRIVY_DEBUG: true
-      #   with:
-      #     scan-type: ${{ inputs.scan-type }}
-      #     image-ref: ${{ inputs.image-ref }}
-      #     scan-ref: ${{ inputs.scan-ref }}
-      #     format: 'sarif'
-      #     output: 'trivy-results.sarif'
-      #     exit-code: '0'
-      # - name: fail with high critical
-      #   uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # 0.33.1
-      #   with:
-      #     scan-type: ${{ inputs.scan-type }}
-      #     image-ref: ${{ inputs.image-ref }}
-      #     scan-ref: ${{ inputs.scan-ref }}
-      #     format: 'table'
-      #     severity: 'HIGH,CRITICAL'
-      #     output: 'trivy-results.txt'
-      #     exit-code: '1'
-      # - name: job summary
-      #   run: |
-      #     # step summary
-      #     echo '```' >> $GITHUB_STEP_SUMMARY
-      #     cat trivy-results.txt >> $GITHUB_STEP_SUMMARY
-      #     echo '```' >> $GITHUB_STEP_SUMMARY
-      # - name: Upload Trivy results to Security tab
-      #   if: always()
-      #   uses: github/codeql-action/upload-sarif@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v4.32.2
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'
+      - name: full scan with Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
+        env:
+          TRIVY_DEBUG: true
+        with:
+          scan-type: ${{ inputs.scan-type }}
+          image-ref: ${{ inputs.image-ref }}
+          scan-ref: ${{ inputs.scan-ref }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '0'
+      - name: fail with high critical
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
+        with:
+          scan-type: ${{ inputs.scan-type }}
+          image-ref: ${{ inputs.image-ref }}
+          scan-ref: ${{ inputs.scan-ref }}
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+          output: 'trivy-results.txt'
+          exit-code: '1'
+      - name: job summary
+        run: |
+          # step summary
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat trivy-results.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Upload Trivy results to Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: 'trivy-results.sarif'
